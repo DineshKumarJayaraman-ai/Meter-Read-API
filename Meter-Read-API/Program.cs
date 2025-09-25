@@ -67,6 +67,7 @@ namespace Meter_Read_API
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(secret.Value));
 
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IMeterReadingRepository, MeterReadingRepository>();
             builder.Services.AddScoped<IMeterReadingService, MeterReadingService>();
 

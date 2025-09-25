@@ -1,8 +1,9 @@
-using Moq;
-using Microsoft.AspNetCore.Http;
 using Meter_Read_API.Model;
 using Meter_Read_API.Repositories.Interfaces;
 using Meter_Read_API.Services;
+using Meter_Read_API.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Moq;
 using System.Text;
 
 public class MeterReadingServiceTests
@@ -23,17 +24,18 @@ public class MeterReadingServiceTests
 
         var file = CreateTestCsvFile(csvContent);
 
-        var mockRepo = new Mock<IMeterReadingRepository>();
-        mockRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
+        var mockMeterRepo = new Mock<IMeterReadingRepository>();
+        var mockCustomerRepo = new Mock<ICustomerRepository>();
+        mockCustomerRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<int> { 1001, 1002 });
 
-        mockRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
+        mockMeterRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<MeterReading>());
 
-        mockRepo.Setup(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()))
+        mockMeterRepo.Setup(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-        var service = new MeterReadingService(mockRepo.Object);
+        var service = new MeterReadingService(mockMeterRepo.Object, mockCustomerRepo.Object);
 
         // Act
         var result = await service.ProcessReadings(file, CancellationToken.None);
@@ -41,7 +43,7 @@ public class MeterReadingServiceTests
         // Assert
         Assert.Equal(2, result.SuccessCount);
         Assert.Equal(0, result.FailureCount);
-        mockRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Once);
+        mockMeterRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -53,14 +55,15 @@ public class MeterReadingServiceTests
 
         var file = CreateTestCsvFile(csvContent);
 
-        var mockRepo = new Mock<IMeterReadingRepository>();
-        mockRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
+        var mockMeterRepo = new Mock<IMeterReadingRepository>();
+        var mockCustomerRepo = new Mock<ICustomerRepository>();
+        mockCustomerRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<int>()); // No valid accounts
 
-        mockRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
+        mockMeterRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<MeterReading>());
 
-        var service = new MeterReadingService(mockRepo.Object);
+        var service = new MeterReadingService(mockMeterRepo.Object, mockCustomerRepo.Object);
 
         // Act
         var result = await service.ProcessReadings(file, CancellationToken.None);
@@ -68,7 +71,7 @@ public class MeterReadingServiceTests
         // Assert
         Assert.Equal(0, result.SuccessCount);
         Assert.Equal(1, result.FailureCount);
-        mockRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Never);
+        mockMeterRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -80,14 +83,15 @@ public class MeterReadingServiceTests
 
         var file = CreateTestCsvFile(csvContent);
 
-        var mockRepo = new Mock<IMeterReadingRepository>();
-        mockRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
+        var mockMeterRepo = new Mock<IMeterReadingRepository>();
+        var mockCustomerRepo = new Mock<ICustomerRepository>();
+        mockCustomerRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<int> { 1001 });
 
-        mockRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
+        mockMeterRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<MeterReading>());
 
-        var service = new MeterReadingService(mockRepo.Object);
+        var service = new MeterReadingService(mockMeterRepo.Object, mockCustomerRepo.Object);
 
         // Act
         var result = await service.ProcessReadings(file, CancellationToken.None);
@@ -95,7 +99,7 @@ public class MeterReadingServiceTests
         // Assert
         Assert.Equal(0, result.SuccessCount);
         Assert.Equal(1, result.FailureCount);
-        mockRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Never);
+        mockMeterRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -107,17 +111,18 @@ public class MeterReadingServiceTests
 
         var file = CreateTestCsvFile(csvContent);
 
-        var mockRepo = new Mock<IMeterReadingRepository>();
-        mockRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
+        var mockMeterRepo = new Mock<IMeterReadingRepository>();
+        var mockCustomerRepo = new Mock<ICustomerRepository>();
+        mockCustomerRepo.Setup(r => r.GetExistingAccountIdsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<int> { 1001 });
 
-        mockRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
+        mockMeterRepo.Setup(r => r.GetExistingReadingsAsync(It.IsAny<List<int>>()))
                 .ReturnsAsync(new List<MeterReading>
                 {
                     new MeterReading { AccountId = 1001, ReadingDateTime = DateTime.Parse("2023-01-01T10:00:00") }
                 });
 
-        var service = new MeterReadingService(mockRepo.Object);
+        var service = new MeterReadingService(mockMeterRepo.Object, mockCustomerRepo.Object);
 
         // Act
         var result = await service.ProcessReadings(file, CancellationToken.None);
@@ -125,6 +130,6 @@ public class MeterReadingServiceTests
         // Assert
         Assert.Equal(0, result.SuccessCount);
         Assert.Equal(1, result.FailureCount);
-        mockRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Never);
+        mockMeterRepo.Verify(r => r.AddReadingsAsync(It.IsAny<List<MeterReading>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -11,10 +11,12 @@ namespace Meter_Read_API.Services
 {
     public class MeterReadingService : IMeterReadingService
     {
+        private readonly ICustomerRepository _customerRepository;
         private readonly IMeterReadingRepository _meterReadingRepository;
-        public MeterReadingService(IMeterReadingRepository meterReadingRepository)
+        public MeterReadingService(IMeterReadingRepository meterReadingRepository, ICustomerRepository customerRepository)
         {
             _meterReadingRepository = meterReadingRepository;
+            _customerRepository = customerRepository;
         }
 
         public async Task<ProcessResultDto> ProcessReadings(IFormFile formFile, CancellationToken cancellationToken = default)
@@ -27,7 +29,7 @@ namespace Meter_Read_API.Services
 
             var accountIds = accountIdsSet.ToList();
 
-            var existingAccountIds = await _meterReadingRepository.GetExistingAccountIdsAsync(accountIds);
+            var existingAccountIds = await _customerRepository.GetExistingAccountIdsAsync(accountIds);
             var existingReadings = await _meterReadingRepository.GetExistingReadingsAsync(accountIds);
             var existingReadingsSet = new HashSet<string>(existingReadings.Select(r => $"{r.AccountId}_{r.ReadingDateTime:O}"));
 

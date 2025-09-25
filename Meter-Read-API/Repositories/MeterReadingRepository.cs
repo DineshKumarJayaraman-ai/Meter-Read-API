@@ -14,14 +14,6 @@ namespace Meter_Read_API.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<List<int>> GetExistingAccountIdsAsync(List<int> accountIds)
-        {
-            return await _appDbContext.Customers
-                .Where(a => accountIds.Contains(a.AccountId))
-                .Select(a => a.AccountId)
-                .ToListAsync();
-        }
-
         public async Task<List<MeterReading>> GetExistingReadingsAsync(List<int> accountIds)
         {
             return await _appDbContext.MeterReadings
