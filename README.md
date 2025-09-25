@@ -1,1 +1,1 @@
-Meter Reading App is to update the reading value used by the customer.  
+Meter Reading App is to processs and update the reading value used by the customer.  
