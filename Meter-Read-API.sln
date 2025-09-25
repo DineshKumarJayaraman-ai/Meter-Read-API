@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36327.8 d17.14
+VisualStudioVersion = 17.14.36327.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meter-Read-API", "Meter-Read-API\Meter-Read-API.csproj", "{D55C15DD-A958-48BC-AD83-4A4E021CEBAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceTest", "ServiceTest\ServiceTest.csproj", "{523B5562-F6F6-448C-BD93-A02AB5D13981}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D55C15DD-A958-48BC-AD83-4A4E021CEBAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D55C15DD-A958-48BC-AD83-4A4E021CEBAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D55C15DD-A958-48BC-AD83-4A4E021CEBAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{523B5562-F6F6-448C-BD93-A02AB5D13981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{523B5562-F6F6-448C-BD93-A02AB5D13981}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{523B5562-F6F6-448C-BD93-A02AB5D13981}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{523B5562-F6F6-448C-BD93-A02AB5D13981}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
